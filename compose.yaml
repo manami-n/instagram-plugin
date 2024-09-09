@@ -1,0 +1,30 @@
+services:
+  http:
+    container_name: insta_api
+    image: nginx
+    networks:
+      - insta_api_default
+    depends_on:
+      - app
+    ports:
+      - "8080:80"
+      - "8443:443"
+    volumes:
+      - .:/var/www
+      - ./docker/nginx/conf/dev/nginx.dev.conf:/etc/nginx/conf.d/default.conf
+      - ./docker/nginx/certs:/etc/nginx/certs
+
+  app:
+    container_name: insta_api_app
+    build:
+      context: docker/app
+      dockerfile: Dockerfile
+    networks:
+      - insta_api_default
+    volumes:
+      - .:/var/www
+      - ./docker/app/conf/php.ini:/usr/local/etc/php/php.ini
+      - ./docker/app/conf/opcache.ini:/usr/local/etc/php/conf.d/opcache.ini
+
+networks:
+  insta_api_default:

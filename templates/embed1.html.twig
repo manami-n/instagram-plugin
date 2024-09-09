@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Instagram Posts</title>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+        <style>
+            *{
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            section{
+                margin: 20px auto;
+                max-width: 1200px;
+            }
+            #standard {
+                font-family: GeneralSans-Medium,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+                display: grid;
+                gap: 10px;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+
+                figure {
+                    width: 100%;
+                    position: relative;
+                    overflow: hidden;
+                    padding-top: 100%;
+                    margin: 0;
+                }
+
+                .insta-media {
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%,-50%);
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    transition: 0.5s;
+                }         
+
+                figure:hover {
+                    cursor: pointer;
+                    .insta-media {
+                        transform: translate(-50%, -50%) scale(105%);
+                    }
+                    .hover {
+                        opacity: 1;
+                    }
+                }
+
+                .play, .carousel {
+                    position: absolute;
+                    color: white;
+                    left: 0;
+                    top: 0;
+                    margin: 0;
+                    display: flex;
+                    width: 100%;
+                    height: 100%;
+                }
+                .play {
+                    font-size: 56px;
+                    justify-content: center;
+                    align-items: center;
+                }
+                .carousel {
+                    font-size:36px;
+                    justify-content: end;
+                    padding-top: 8px;
+                    transform: translateX(-8px);
+                }
+
+                
+                .hover {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: flex-end;
+                    align-items: center;
+                    background: rgba(0, 0, 0, 0.5);
+                    opacity: 0;
+                    transition: opacity 0.7s;
+                    color: white;
+                    z-index: 10;
+                    
+                    .timestamp {
+                        margin: 0;
+                        padding: 0 10px 20px;
+                        text-align: center;
+                        }
+                        
+                    a {
+                        color: white;
+                        position: absolute;
+                        bottom: 8px;
+                        right: 8px;
+                        text-decoration: none;
+                        font-size: 20px;
+                        }
+                }
+
+                .details {
+                    line-height: 1.4;
+                    font-size: 13px;
+                    color: #434960;
+                    .caption{
+                        padding: 12px 20px;
+                    }
+                    ul {
+                        list-style: none;
+                        display: flex;
+                        gap: 10px;
+                        padding: 0 20px 12px;
+                        color: #DD9494;
+                    }
+                }
+
+            }
+            
+            #popup {
+                width: 100%;
+                height: 100%;
+                position: fixed;
+                top: 0;
+                left: 0;
+                background-color: rgba(0, 0, 0, 0.85);
+                z-index: 15;
+                display: none;
+                justify-content: center;
+                align-items: center;
+                gap: 15px;
+
+                ul {
+                    list-style: none;
+                }
+                a {
+                    color: inherit;
+                    text-decoration: none;
+                }
+
+                #prev, #next {
+                    color: #fff;
+                    font-size: 40px;
+                    opacity: .5;
+                    transition: 0.4s;
+                }
+                #prev:hover, #next:hover {
+                    opacity: 1;
+                }
+                #container{
+                    height: 60vh;
+                    display: flex;
+                    position: relative;
+                    .preview{
+                        overflow: hidden;
+                        border-radius: 5px 0 0 5px;
+                        img {height: 100%;}
+                    }
+                    .side {
+                        width: 300px;
+                        background-color: white;
+                        padding: 15px 20px;
+                        border-radius: 0 5px 5px 0;
+
+                        .user{
+                            font-size: 14px;
+                            margin: 10px 0;
+                            font-weight: 600;
+                            a:hover{text-decoration: underline;}
+                        }
+                        .caption {
+                            font-size: 14px;
+                            color: #333;
+                            margin-bottom: 20px;
+                            font-weight: 300;
+                        }
+                    }
+                    #close {
+                        position: absolute;
+                        top: 0;
+                        right: 0;
+                        padding: 10px;
+                        font-size: 16px;
+                        cursor: pointer;
+                        border-radius: 0 5px 0 5px;
+                        color: #707070;
+                    }
+                    #close:hover{
+                        color: #333;
+                        background-color: rgba(0, 0, 0, .05);
+                    }
+                    
+                }
+                .preview {
+                    position: relative;
+                }
+                #popup-video{
+                    height: 100%; 
+                }
+                #popup-carousel{
+                    position: absolute;
+                    top: 0;
+                    width: 100%;
+                    height: 100%;
+                    z-index: 40;
+                    #mini-prev, #mini-next{
+                        position:absolute;
+                        top: 50%;
+                        padding: 5px 9px;
+                        background: #ffffff55;
+                        border-radius: 50%;
+                    }
+                    #mini-prev{
+                        left: 5px;
+                    }
+                    #mini-next{
+                        right: 5px;
+                    }
+                    #carousel-pagination {
+                        position: absolute;
+                        width: fit-content;
+                        left: 50%;
+                        transform: translateX(-50%);
+                        bottom: 15px;
+                        display: flex;
+                        gap: 15px;
+                        z-index: 39;
+                        justify-content: center;
+                        background: #0000001A;
+                        padding: 8px 15px;
+                        border-radius: 13px;
+                    }
+                    .carousel-paginationCircle {
+                        display: block;
+                        width: 10px;
+                        height: 10px;
+                        background: #ffffff;
+                        opacity: 0.7;
+                        border-radius: 50%;
+                    }
+                }
+            }
+            @media (max-width: 800px) {
+                #popup #container .side{
+                    width: 35%;
+                }
+            }
+            @media (max-width: 550px) {
+                #popup {
+                    #prev, #next{
+                        position: absolute;
+                        z-index: -1;
+                    }
+                    #popup-video{
+                        width: 100%; 
+                    }
+                    #container{
+                        width: 100%;
+                        display: block;
+                        transform: translateY(-15%);
+                        .preview{
+                            border-radius: 0;
+                            img {width: 100%;}
+                        }
+                        .side {
+                            width: 100%;
+                            border-radius: 0;
+    
+                        }
+                    }
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Embed Layout test</h1>
+        <section>
+            <h2>Standard</h2>
+                <div id="standard">
+                {% for post in posts %}
+                    <article>
+                        <figure>
+                    {% if post.media_type == 'IMAGE' %}
+                            <img src="{{ post.media_url }}" alt="{% if post.caption %}{{ post.caption }}{% endif %}" class="insta-media">
+                    {% elseif post.media_type == 'VIDEO' %}
+                            <video class="insta-media">
+                                <source src="{{ post.media_url }}" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                            <p class="play"><i class="fa-solid fa-play"></i></p>
+                    {% elseif post.media_type == 'CAROUSEL_ALBUM' %}
+                            <img src="{{ post.media_url }}" alt="{% if post.caption %}{{ post.caption }}{% endif %}" class="insta-media">
+                            <!-- {% for child in post.children %}{{ child.media_url }}{% endfor %} -->
+                            <p class="carousel"><i class="fa-regular fa-clone"></i></p>
+                    {% endif %}        
+                            <div class="hover" data-id="{{ post.id }}" data-type="{{ post.media_type }}" data-caption="{{ post.caption }}" data-timestanmp="{{ post.timestamp }}" data-user="{{ profile.username }}" data-media-url="{{ post.media_url }}" {% if post.media_type == 'CAROUSEL_ALBUM' %} data-children="{{ post.children | json_encode }}"{% endif %}>
+                                <p class="timestamp" data-timestamp="{{ post.timestamp }}"><i class="fa-regular fa-clock"></i> JULY 19 {{ post.timestamp }}</p>
+                                <a href="{{ post.media_url }}" target="_blank"><i class="fa-brands fa-instagram"></i></a><!-- post.permalink -->
+                            </div>
+                        </figure>
+                        <div class="details">
+                            {% if post.caption %}
+                            <p class="caption">{{ post.caption }}</p>
+                            {% endif %}
+                        </div>
+                    </article>
+                {% endfor %}
+                </div>
+                <div id="popup" style="display: none;">
+                    <div id="prev"><i class="fa-solid fa-chevron-left"></i></div>
+                    <div id="container">
+                        <div class="preview">
+                            <img id="popup-image" src="" alt="">
+                            <video id="popup-video" style="display: none;" controls autoplay>
+                                <source id="popup-video-source" src="" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                            <div class="carousel" id="popup-carousel" style="display: none;">
+                                <p id="mini-prev" style="display: none;"><i class="fa-solid fa-chevron-left"></i></p>
+                                <p id="mini-next" style="display: none;"><i class="fa-solid fa-chevron-right"></i></p>
+                                <div id="carousel-pagination">
+                                    <span class="carousel-paginationCircle"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="side">
+                            <p class="user"><a href="" id="popup-user" target="_blank">@username</a></p>
+                            <p class="caption" id="popup-caption">Caption Lorem ipsum dolor sit amet.</p>
+                        </div>
+                        <div id="close"><i class="fa-solid fa-xmark"></i></div>
+                    </div>
+                    <div id="next"><i class="fa-solid fa-chevron-right"></i></div>
+                </div>
+        </section>
+    </body>
+    <script src="https://kit.fontawesome.com/e26a24a7d1.js" crossorigin="anonymous"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const popup = document.getElementById('popup');
+        const popupImage = document.getElementById('popup-image');
+        const popupVideo = document.getElementById('popup-video');
+        const popupVideoSource = document.getElementById('popup-video-source');
+        const popupUser = document.getElementById('popup-user');
+        const popupCaption = document.getElementById('popup-caption');
+        const close = document.getElementById('close');
+        const prev = document.getElementById('prev');
+        const next = document.getElementById('next');
+        const miniPrev = document.getElementById('mini-prev');
+        const miniNext = document.getElementById('mini-next');
+        const popupCarousel = document.getElementById('popup-carousel');
+        const carouselPagination = document.getElementById('carousel-pagination');
+
+        const posts = Array.from(document.querySelectorAll('.hover'));
+        let currentIndex = -1;
+        let currentCarouselIndex = 0;
+        let currentChildren = [];
+
+        //Time stamp changing format
+        function formatTimestamp(timestamp) {
+            const date = new Date(timestamp);
+            const options = { month: 'long', day: 'numeric' };
+            return date.toLocaleDateString('en-US', options);
+        }
+        const timestamps = document.querySelectorAll('.timestamp');
+        timestamps.forEach(function(timestampElem) {
+            const originalTimestamp = timestampElem.getAttribute('data-timestamp');
+            const formattedTimestamp = formatTimestamp(originalTimestamp);
+            timestampElem.innerHTML = `<i class="fa-regular fa-clock"></i> ${formattedTimestamp}`;
+        });
+
+        // Carouselimages
+        function updateCarouselArrows() {
+            miniPrev.style.display = currentCarouselIndex <= 0 ? 'none' : 'block';
+            miniNext.style.display = currentCarouselIndex >= currentChildren.length - 1 ? 'none' : 'block';
+        }
+
+        function updateCarouselDots() {
+            carouselPagination.innerHTML = '';
+            currentChildren.forEach((_, index) => {
+                const dot = document.createElement('span');
+                dot.className = 'carousel-paginationCircle js-dot';
+                dot.style.opacity = index === currentCarouselIndex ? '1' : '0.7';
+                dot.addEventListener('click', function(event) {
+                    event.stopPropagation();
+                    showCarouselImage(index);
+                });
+                carouselPagination.appendChild(dot);
+            });
+        }
+
+        function showCarouselImage(index) {
+            if (index < 0 || index >= currentChildren.length) return;
+            currentCarouselIndex = index;
+            popupImage.src = currentChildren[currentCarouselIndex].media_url;
+            updateCarouselArrows();
+            updateCarouselDots();
+        }
+
+        // Popup
+        function showPopup(index) {
+            if (index < 0 || index >= posts.length) return;
+
+            currentIndex = index;
+            const hover = posts[currentIndex];
+            const mediaType = hover.getAttribute('data-type');
+            const mediaUrl = hover.getAttribute('data-media-url');
+            const mediaCaption = hover.getAttribute('data-caption');
+            const mediaUser = hover.getAttribute('data-user');
+
+            if (mediaType === 'IMAGE') {
+                popupImage.style.display = 'block';
+                popupVideo.style.display = 'none';
+                popupCarousel.style.display = 'none';
+                popupImage.src = mediaUrl;
+            } else if (mediaType === 'VIDEO') {
+                popupImage.style.display = 'none';
+                popupVideo.style.display = 'block';
+                popupCarousel.style.display = 'none';
+                popupVideoSource.src = mediaUrl;
+                popupVideo.load();
+            } else if (mediaType === 'CAROUSEL_ALBUM') {
+                currentChildren = JSON.parse(hover.getAttribute('data-children'));
+                popupImage.style.display = 'block';
+                popupVideo.style.display = 'none';
+                popupCarousel.style.display = 'block';
+                showCarouselImage(0);
+            }
+
+            popupUser.href = `https://www.instagram.com/${mediaUser}/`;
+            popupUser.textContent = `@${mediaUser}`;
+            popupCaption.textContent = mediaCaption;
+
+            popup.style.display = 'flex';
+
+            updateMainArrows();
+        }
+
+        //Popup arrows
+        function updateMainArrows() {
+            prev.style.display = currentIndex > 0 ? 'block' : 'none';
+            next.style.display = currentIndex < posts.length - 1 ? 'block' : 'none';
+        }
+
+        posts.forEach((hover, index) => {
+            hover.addEventListener('click', function() {
+                showPopup(index);
+            });
+        });
+
+        prev.addEventListener('click', function(event) {
+            event.stopPropagation();
+            if (currentIndex > 0) {
+                showPopup(currentIndex - 1);
+            }
+        });
+
+        next.addEventListener('click', function(event) {
+            event.stopPropagation();
+            if (currentIndex < posts.length - 1) {
+                showPopup(currentIndex + 1);
+            }
+        });
+
+        // Carousel arrows
+        miniPrev.addEventListener('click', function(event) {
+            event.stopPropagation();
+            if (currentCarouselIndex > 0) {
+                showCarouselImage(currentCarouselIndex - 1);
+            }
+        });
+
+        miniNext.addEventListener('click', function(event) {
+            event.stopPropagation();
+            if (currentCarouselIndex < currentChildren.length - 1) {
+                showCarouselImage(currentCarouselIndex + 1);
+            }
+        });
+
+        // Popup closing
+        close.addEventListener('click', function(event) {
+            event.stopPropagation();
+            popup.style.display = 'none';
+        });
+
+        popup.addEventListener('click', function(event) {
+            if (event.target.closest('#container') === null) {
+                popup.style.display = 'none';
+            }
+        });
+    });
+    </script>
+</html>
